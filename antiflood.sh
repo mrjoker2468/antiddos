@@ -9,10 +9,10 @@ iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,PSH,URG -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,ACK,URG -j DROP
-iptables -A INPUT -p tcp -m tcp --sport 443 --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --sport 40120 --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT
 iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,ACK SYN,ACK -j DROP  iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP iptables -A INPUT -m state --state RELATED,ESTABLISHED -m limit --limit 10/sec --limit-burst 15 -j ACCEPT
-iptables -A INPUT -p tcp --sport 80 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP iptables -A INPUT -p tcp --sport 443 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -FORWARD DROP ovh kill patch
+iptables -A INPUT -p tcp --sport 30120 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP iptables -A INPUT -p tcp --sport 40120 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -FORWARD DROP ovh kill patch
 iptables -I INPUT -p udp -m udp -m string --hex-string "|ffbbbfefbbbeffbbbfebffffefbbbf30783030303230303031|" --algo kmp -j DROP
 iptables -I INPUT -p udp -m udp -m string --hex-string "|f0ffffffef6765746368616c6c656e676520302022|" --algo kmp -j ACCEPT
 iptables -I INPUT -p udp -m udp -m string --hex-string "|c0cf0fffef6765746368616c6c656e676520302022|" --algo kmp -j DROP
@@ -52,11 +52,11 @@ iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,PSH,URG -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,ACK,URG -j DROP
-iptables -A INPUT -p tcp -m tcp --sport 443 --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --sport 40120 --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT
 iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,ACK SYN,ACK -j DROP  iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP iptables -A INPUT -m state --state RELATED,ESTABLISHED -m limit --limit 10/sec --limit-burst 15 -j ACCEPT
-iptables -A INPUT -p tcp --sport 80 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP 
-iptables -A INPUT -p tcp --sport 443 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -FORWARD DROP ovh kill patch
+iptables -A INPUT -p tcp --sport 30120 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP 
+iptables -A INPUT -p tcp --sport 40120 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -FORWARD DROP ovh kill patch
 iptables -A INPUT -s 127.0.0.0/8 -d 127.0.0.0/8 -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 iptables -A INPUT -p tcp -m tcp -m connlimit --connlimit-above 8 --connlimit-mask 32 --connlimit-saddr -j DROP
@@ -84,7 +84,7 @@ iptables -N ovh_rape
 iptables -A INPUT -p udp -m set --match-set ovh_rape src -m limit -j ovh_rape
 iptables -A ovh_rape -m limit --limit 1000/s -j RETURN
 iptables -A ovh_rape -j DROP
-iptables -A INPUT -p tcp -m connlimit --connlimit-above 80 -j REJECT --reject-with tcp-reset
+iptables -A INPUT -p tcp -m connlimit --connlimit-above 30120 -j REJECT --reject-with tcp-reset
 iptables -t mangle -A PREROUTING -f -j DROP
 iptables -t mangle -A PREROUTING -f -j DROP
 iptables -A INPUT -p udp -m multiport --dports 135,137,138,139,445,1433,1434 -j DROP
@@ -257,13 +257,13 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -p tcp --dport 21 -s 192.168.1.0/24 -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -s 192.168.1.0/24 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 30120 -j ACCEPT
 iptables -A INPUT -p tcp --dport 10000 -s 192.168.1.0/24 -j ACCEPT
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -p tcp --dport 21 -s 192.168.1.0/24 -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -s 192.168.1.0/24 -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 30120 -j ACCEPT
 iptables -A INPUT -p tcp --dport 10000 -s 192.168.1.0/24 -j ACCEPT
 iptables -N SCANNER
 iptables -A SCANNER -m limit --limit 10/min --limit-burst 3 -j LOG --log-level warning --log-prefix "[SCANNER: DROP]"
@@ -298,8 +298,8 @@ iptables -A syn-flood -m limit --limit 10/sec --limit-burst 15 -j RETURN
 iptables -A syn-flood -j LOG --log-prefix "SYN flood: "
 iptables -A syn-flood -j DROP
 iptables -N http-flood
-iptables -A INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 1 -j http-flood
-iptables -A INPUT -p tcp --syn --dport 443 -m connlimit --connlimit-above 1 -j http-flood
+iptables -A INPUT -p tcp --syn --dport 30120 -m connlimit --connlimit-above 1 -j http-flood
+iptables -A INPUT -p tcp --syn --dport 40120 -m connlimit --connlimit-above 1 -j http-flood
 iptables -A http-flood -m limit --limit 10/s --limit-burst 10 -j RETURN
 iptables -A http-flood -m limit --limit 1/s --limit-burst 10 -j LOG --log-prefix "HTTP-FLOOD "
 iptables -A http-flood -j DROP
